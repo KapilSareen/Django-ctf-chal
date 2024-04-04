@@ -20,8 +20,7 @@ MESSAGE_STORAGE = 'app.storage.CustomMessageStorage'
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-24n%to834bnqiy8-1=$o%q0a-(+ij-_q1cml08ui7d$(0skgip'
-SECRET_KEY='flag{c0ngr4t5_y0u_l3ak3d_0ut_th3_53cr3ts}'
+SECRET_KEY='flag{fake-flag}'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
