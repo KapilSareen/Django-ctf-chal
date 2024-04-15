@@ -24,7 +24,7 @@ def say_hello(request):
     return redirect(reverse('notes:make_note'))
 
 def show_notes(request):
-    alias = request.GET.get('alias') or 'User'  
+    alias = request.GET.get('alias') or 'User'
     alias = sanitize_input(alias)
 
     notes = Note.objects.all()
@@ -129,10 +129,10 @@ def show_notes(request):
              <div class="note">
             <h3>Try to get the secrets</h3>
             <p>The admin seems to left his secrets unprotected, maybe you can get 'em!</p>
-        
+
         </div>
             """
-    
+
     for note in notes:
         template_string += f"""
         <div class="note">
@@ -147,7 +147,7 @@ def show_notes(request):
 </form>
 
 
-        
+
         </div>
     </body>
     </html>
@@ -159,7 +159,6 @@ def show_notes(request):
 def make_note(request):
     if request.method == "POST":
         form = forms.NoteForm(request.POST)
-        notes = Note.objects.all()
         alias = request.POST.get('alias', None)
         if form.is_valid():
             title = form.cleaned_data.get('title')
@@ -168,8 +167,8 @@ def make_note(request):
                 # If SSTI vulnerability found, return an error response
                 return HttpResponse("Error: SSTI detected.", status=400)
             else:
-                form.save()
-                return redirect('notes:show_notes') + f'?alias={alias}'
+               form.save()
+               return redirect(reverse('notes:show_notes') + f'?alias={alias}')
     else:
         form = forms.NoteForm()
     return render(request, 'index.html', {'form': form})
