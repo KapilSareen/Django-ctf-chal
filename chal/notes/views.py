@@ -13,6 +13,13 @@ def sanitize_input(input_str):
     sanitized_input = re.sub(r'{.*?}', '', input_str)
     return urllib.parse.unquote(sanitized_input)
 
+def is_ssti_vulnerable(input_str):
+    ssti_indicators = ['{{', '}}']
+    for indicator in ssti_indicators:
+        if indicator in input_str:
+            return True
+    return False
+
 def say_hello(request):
     return redirect(reverse('notes:make_note'))
 
@@ -129,8 +136,8 @@ def show_notes(request):
     for note in notes:
         template_string += f"""
         <div class="note">
-            <h3>{note.title}</h3>
-            <p>{note.body}</p>
+            <h3>{html.escape(note.title)}</h3>
+            <p>{html.escape(note.body)}</p>
         </div>
         """
 
@@ -155,8 +162,14 @@ def make_note(request):
         notes = Note.objects.all()
         alias = request.POST.get('alias', None)
         if form.is_valid():
-            form.save()
-            return redirect(reverse('notes:show_notes') + f'?alias={alias}')
+            title = form.cleaned_data.get('title')
+            body = form.cleaned_data.get('body')
+            if is_ssti_vulnerable(title) or is_ssti_vulnerable(body):
+                # If SSTI vulnerability found, return an error response
+                return HttpResponse("Error: SSTI detected.", status=400)
+            else:
+                form.save()
+                return redirect('notes:show_notes') + f'?alias={alias}'
     else:
         form = forms.NoteForm()
     return render(request, 'index.html', {'form': form})
